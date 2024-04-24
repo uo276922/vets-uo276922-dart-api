@@ -66,6 +66,15 @@ class DbManager {
     return result;
   }
 
- 
-
+  Future<dynamic> deleteOne(Map<String, dynamic> filter) async {
+    try {
+      await connect();
+      final result = await _collection.deleteOne(filter);
+      return result;
+    } catch (error) {
+      return {"error": "Se ha produciondo error inesperado"};
+    } finally {
+      await close();
+    }
+  }
 }
