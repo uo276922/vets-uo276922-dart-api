@@ -25,4 +25,9 @@ class UsersRepository {
     final result = await dbManager.deleteOne(filter);
     return result;
   }
+
+  static Future<dynamic> updateOne(Map<String, dynamic> filter, Map<String, dynamic> update) async {
+    final result = await dbManager.updateOne(filter, update);
+    return result;
+  }
 }

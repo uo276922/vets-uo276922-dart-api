@@ -70,9 +70,26 @@ class DbManager {
     try {
       await connect();
       final result = await _collection.deleteOne(filter);
-      return result;
+      if (result.isSuccess) {
+        return {"delete": "Usuario borrado de forma correcta"};
+      } else {
+        return {"error": "La eliminación ha fallado"};
+      }
     } catch (error) {
       return {"error": "Se ha produciondo error inesperado"};
+    } finally {
+      await close();
+    }
+  }
+
+  Future<dynamic> updateOne(
+      Map<String, dynamic> filter, Map<String, dynamic> update) async {
+    try {
+      await connect();
+      final result = await _collection.update(filter, update);
+      return result;
+    } catch (error) {
+      return {"error": "Se ha producido un error inesperado"};
     } finally {
       await close();
     }
