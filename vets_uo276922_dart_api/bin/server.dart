@@ -6,6 +6,8 @@ import 'package:shelf_router/shelf_router.dart';
 import 'dart:convert';
 import 'package:vets_uo276922_dart_api/db_manager.dart';
 import 'package:vets_uo276922_dart_api/routers/user_router.dart';
+import 'package:vets_uo276922_dart_api/user_token_service.dart' as jwt_service;
+import 'package:vets_uo276922_dart_api/middleware_token.dart';
 
 // Configure routes.
 final _router = Router()..get('/', _rootHandler);
@@ -20,6 +22,7 @@ void main(List<String> args) async {
 // Configure a pipeline that logs requests.
   final handler = Pipeline()
       .addMiddleware(logRequests())
+      .addMiddleware(tokenValidatorMiddleware)
       .addHandler(Cascade().add(_router).add(userRouter).handler);
 // añado el router de usuarios
 // For running in containers, we respect the PORT environment variable.

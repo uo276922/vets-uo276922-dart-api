@@ -16,78 +16,44 @@ final userRouter = Router()
   ..put('/users/<id>', _updateUserHandler);
 
 Future<Response> _updateUserHandler(Request request) async {
-  final dynamic token =
-      request.headers.containsKey("token") ? request.headers["token"] : "";
-  final Map<String, dynamic> verifiedToken =
-      jwt_service.UserTokenService.verifyJwt(token);
-  if (verifiedToken['authorized'] == false) {
-    return Response.unauthorized(json.encode(verifiedToken));
+  dynamic userId = ObjectId.fromHexString(request.params['id'].toString());
+  final user = await UsersRepository.findOne({"_id": userId});
+  if (user != null) {
+    final updateFields = json.decode(await request.readAsString());
+    // Actualizar campos del usuario
+    await UsersRepository.updateOne({"_id": userId}, {"\$set": updateFields});
+    return Response.ok(
+        json.encode({"message": "Usuario actualizado de forma correcta"}));
   } else {
-    dynamic userId = ObjectId.fromHexString(request.params['id'].toString());
-    final user = await UsersRepository.findOne({"_id": userId});
-    if (user != null) {
-      final updateFields = json.decode(await request.readAsString());
-      // Actualizar campos del usuario
-      await UsersRepository.updateOne({"_id": userId}, {"\$set": updateFields});
-      return Response.ok(
-          json.encode({"message": "Usuario actualizado de forma correcta"}));
-    } else {
-      return Response.notFound(
-          json.encode({"message": "Usuario no encontrado"}));
-    }
+    return Response.notFound(json.encode({"message": "Usuario no encontrado"}));
   }
 }
 
 Future<Response> _deleteUserHandler(Request request) async {
-  final dynamic token =
-      request.headers.containsKey("token") ? request.headers["token"] : "";
-  final Map<String, dynamic> verifiedToken =
-      jwt_service.UserTokenService.verifyJwt(token);
-  if (verifiedToken['authorized'] == false) {
-    return Response.unauthorized(json.encode(verifiedToken));
-  } else {
-    dynamic userId = ObjectId.fromHexString(request.params['id'].toString());
-    final users = await UsersRepository.findOne({"_id": userId});
-    if (users != null) {
-      final result = await UsersRepository.deleteOne({"_id": userId});
-      if (result.containsKey("delete")) {
-        return Response.ok(json.encode({"message": result["delete"]}));
-      } else {
-        return Response.internalServerError(
-            body: json.encode({"error": result["error"]}));
-      }
+  dynamic userId = ObjectId.fromHexString(request.params['id'].toString());
+  final users = await UsersRepository.findOne({"_id": userId});
+  if (users != null) {
+    final result = await UsersRepository.deleteOne({"_id": userId});
+    if (result.containsKey("delete")) {
+      return Response.ok(json.encode({"message": result["delete"]}));
     } else {
-      return Response.notFound(
-          json.encode({"message": "Usuario no encontrado"}));
+      return Response.internalServerError(
+          body: json.encode({"error": result["error"]}));
     }
+  } else {
+    return Response.notFound(json.encode({"message": "Usuario no encontrado"}));
   }
 }
 
 Future<Response> _usersHandler(Request request) async {
-  final dynamic token =
-      request.headers.containsKey("token") ? request.headers["token"] : "";
-  final Map<String, dynamic> verifiedToken =
-      jwt_service.UserTokenService.verifyJwt(token);
-  if (verifiedToken['authorized'] == false) {
-    return Response.unauthorized(json.encode(verifiedToken));
-  } else {
-    final users = await UsersRepository.findAll();
-    return Response.ok(json.encode(users));
-  }
+  final users = await UsersRepository.findAll();
+  return Response.ok(json.encode(users));
 }
 
 Future<Response> _getUserHanler(Request request) async {
-  final dynamic token =
-      request.headers.containsKey("token") ? request.headers["token"] : "";
-  final Map<String, dynamic> verifiedToken =
-      jwt_service.UserTokenService.verifyJwt(token);
-  if (verifiedToken['authorized'] == false) {
-    return Response.unauthorized(json.encode(verifiedToken));
-  } else {
-    dynamic userId = ObjectId.fromHexString(request.params['id'].toString());
-    final users = await UsersRepository.findOne({"_id": userId});
-    return Response.ok(json.encode(users));
-  }
+  dynamic userId = ObjectId.fromHexString(request.params['id'].toString());
+  final users = await UsersRepository.findOne({"_id": userId});
+  return Response.ok(json.encode(users));
 }
 
 /* Funcion manejadora del login*/
