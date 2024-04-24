@@ -42,4 +42,30 @@ class DbManager {
       await close();
     }
   }
+
+  //Users
+  Future<dynamic> insertOne(Map<String, dynamic> data) async {
+    try {
+      await connect();
+      final result = await _collection.insertOne(data);
+      if (result.isSuccess) {
+        return {"insertedId": result.id};
+      } else {
+        return {"error": result.writeError.errmsg};
+      }
+    } catch (error) {
+      return {"error": "Se ha produciondo error inesperado"};
+    } finally {
+      await close();
+    }
+  }
+
+  Future<dynamic> findOne(filter) async {
+    await connect();
+    final result = await _collection.findOne(filter);
+    return result;
+  }
+
+ 
+
 }

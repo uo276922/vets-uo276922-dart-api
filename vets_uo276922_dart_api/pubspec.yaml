@@ -11,6 +11,9 @@ dependencies:
   shelf: ^1.4.0
   shelf_router: ^1.1.0
   mongo_dart: ^0.10.1
+  bson: ^5.0.4
+  bcrypt: ^1.1.3
+
 
 dev_dependencies:
   http: ^1.1.0
